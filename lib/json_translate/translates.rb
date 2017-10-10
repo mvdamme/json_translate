@@ -108,13 +108,14 @@ module JSONTranslate
       # Returns the attribute name Symbol, locale Symbol, and a Boolean
       # indicating whether or not the caller is attempting to assign a value.
       def parse_translated_attribute_accessor(method_name)
-        return unless method_name =~ /\A([a-z_]+)_([a-z]{2})(=?)\z/
+        # code taken from https://github.com/cfabianski/json_translate/commit/4c44e23eb3eb50226e591129cadb427a24353470
+        return unless /\A(?<attribute>[a-z0-9_]+)_(?<locale>[a-z]{2})(?<assignment>=?)\z/ =~ method_name
 
-        translated_attr_name = $1.to_sym
-        return unless translated_attrs.include?(translated_attr_name)
+        translated_attr_name = attribute.to_sym
+        return unless translated_attribute_names.include?(translated_attr_name)
 
-        locale    = $2.to_sym
-        assigning = $3.present?
+        locale    = locale.to_sym
+        assigning = assignment.present?
 
         [translated_attr_name, locale, assigning]
       end
